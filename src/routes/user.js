@@ -37,7 +37,7 @@ router.post('/signin', async (req, res) => {
     if (!user) return res.status(401).json({message: "The email does'nt exists"})
     if (user.password !== password) return res.status(401).json({message: "Wrong password"})
 
-    secretKey = jwt.sign( {_id: newUser._id}, "secretKey")
+    secretKey = jwt.sign( {_id: user._id}, "secretKey")
 
     return res.status(200).json({ secretKey })
 })
