@@ -6,10 +6,45 @@
         import { io } from 'https://cdn.socket.io/4.3.2/socket.io.esm.min.js'
         
         const socket = io()
+
+        const form = document.getElementById('form')
+        const input = document.getElementById('input')
+        const sensors = document.getElementById('sensors')
+        let sensorId
+
+        socket.on('select sensor', (sensor) => {
+            console.log(sensor.sensor_name)
+            const item = `<p>${sensor.sensor_name}</p>`
+            sensors.insertAdjacentHTML('beforeend', item)
+        })
+        console.log(sensorId, "Actualiza?")
+        socket.on(`sensor data change ${sensorId}`, (sensor) => {
+            console.log(sensor, "Actualiza?")
+        })
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault()
+
+            if (input.value) {
+                sensorId = input.value
+                console.log(sensorId, "Actualiza?2")
+                socket.emit('select sensor', input.value)
+                input.value = ''
+            }
+        })
     </script>
 </head>
 <body>
     <h1>Sensor Data in Real Time</h1>
+    <section>
+        <form id="form">
+            <input type="number" name="sensor_id" id="input" min="1" max="3"/>
+            <button type="submit">Enviar</button>
+        </form>
+        <aside id="sensors">
+
+        </aside>
+    </section>
     <ul id="sensorDataList"></ul>
 </body>
 </html>

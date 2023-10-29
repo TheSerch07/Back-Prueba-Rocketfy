@@ -7,13 +7,6 @@ const io = socketIo();
 
 io.on('connection', (socket) => {
     console.log('A client has connected to Socket.io');
-
-    // const Sensor = mongoose.connection.collection('sensor');
-    // Sensor.watch().on('change', (change) => {
-    //     if (change.operationType === 'update' || change.operationType === 'insert') {
-    //         socket.emit('sensorDataChange', change.fullDocument);
-    //     }
-    // });
 });
 
 router.get('/connect-to-socket', (req, res) => {
