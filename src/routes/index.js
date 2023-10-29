@@ -5,6 +5,6 @@ const router = Router();
 const middlewareAuth = require('../handles/functions')
 
 router.use('/user', userRouter);
-router.use('/sensor', middlewareAuth , sensorRouter)
+router.use('/sensor' , sensorRouter)
 
 module.exports = router

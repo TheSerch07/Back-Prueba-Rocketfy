@@ -1,13 +1,24 @@
 const express = require('express');
-const routes = require('./routes/index')
-const app = express();
-require('./database')
+const { createServer } = require('http'); // Importa el módulo http
+const { Server } = require('socket.io');
+const routes = require('./routes/index');
+require('./database');
 const PORT = 3000;
 
-app.use(express.json())
-app.use('/', routes)
+const app = express();
+const server = createServer(app);
+const io = new Server(server);
 
-app.listen(PORT, () => {
-    console.log(`Server on port ${PORT}`)
+io.on('connection', (socket) => {
+  console.log('A client has connected');  
+});
+
+app.use(express.json());
+app.use('/', routes);
+
+// Configura el servidor HTTP con Express
+
+server.listen(PORT, () => {
+  console.log(`Server on port ${PORT}`);
 });
 
