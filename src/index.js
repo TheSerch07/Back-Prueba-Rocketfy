@@ -4,6 +4,7 @@ const { createServer } = require('http');
 const { Server } = require('socket.io');
 const Sensor = mongoose.connection.collection('sensor');
 const routes = require('./routes/index');
+const verifyToken = require('./handles/functions');
 require('./database');
 const PORT = 3000;
 

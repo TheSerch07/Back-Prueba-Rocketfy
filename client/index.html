@@ -10,24 +10,29 @@
         const form = document.getElementById('form')
         const input = document.getElementById('input')
         const sensors = document.getElementById('sensors')
-        let sensorId
+        let sensorId = [1, 2, 3]
 
         socket.on('select sensor', (sensor) => {
             console.log(sensor.sensor_name)
             const item = `<p>${sensor.sensor_name}</p>`
             sensors.insertAdjacentHTML('beforeend', item)
         })
-        console.log(sensorId, "Actualiza?")
-        socket.on(`sensor data change ${sensorId}`, (sensor) => {
+
+        socket.on(`sensor data change 1`, (sensor) => {
+            console.log(sensor, "Actualiza?")
+        })
+        
+        socket.on(`sensor data change 2`, (sensor) => {
             console.log(sensor, "Actualiza?")
         })
 
+        socket.on(`sensor data change 3`, (sensor) => {
+            console.log(sensor, "Actualiza?")
+        })
         form.addEventListener('submit', (e) => {
             e.preventDefault()
 
             if (input.value) {
-                sensorId = input.value
-                console.log(sensorId, "Actualiza?2")
                 socket.emit('select sensor', input.value)
                 input.value = ''
             }
