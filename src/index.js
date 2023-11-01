@@ -1,10 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors')
 const { createServer } = require('http');
 const { Server } = require('socket.io');
 const Sensor = mongoose.connection.collection('sensor');
 const routes = require('./routes/index');
-const verifyToken = require('./handles/functions');
 require('./database');
 const PORT = 3000;
 
@@ -53,10 +53,9 @@ io.on('connection', (socket) => {
   addDataToDatabase('noise_level', 'air_quality', Math.random() * 10 + 40, "Buena", 3)
 });
 
+app.use(cors())
 app.use(express.json());
 app.use('/', routes);
-
-// Configura el servidor HTTP con Express
 
 server.listen(PORT, () => {
   console.log(`Server on port ${PORT}`);
