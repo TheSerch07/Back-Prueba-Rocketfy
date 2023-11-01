@@ -10,7 +10,11 @@ const PORT = 3000;
 
 const app = express();
 const server = createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+  cors: {
+    origin: '*'
+  }
+});
 
 let sensorId
 
@@ -24,7 +28,7 @@ io.on('connection', (socket) => {
   socket.on(`select sensor`, async (id) => {
     sensorId = id
     const sensor = await Sensor.findOne({ sensor_id: Number(id) });
-    io.emit('select sensor' ,sensor)
+    socket.emit('select sensor' ,sensor)
   })
 
   const addDataToDatabase = (typeDataOne, typeDataTwo, calculateOne, calculateTwo, indexUpdate) => {
@@ -44,13 +48,32 @@ io.on('connection', (socket) => {
       const sensor = await Sensor.findOne({ sensor_id: Number(sensorId)})
       
       console.log(sensorId)
-      io.emit(`sensor data change ${sensorId}`, sensor);
+      socket.emit(`sensor data change ${sensorId}`, sensor);
     }, 10000);
   };
 
-  addDataToDatabase('temperature', 'humidity', Math.random() * 10 + 30, Math.random() * 10 + 50, 1);
-  addDataToDatabase('pressure', 'wind_speed', Math.random() * 10 + 1000, Math.random() * 5 + 1, 2)
-  addDataToDatabase('noise_level', 'air_quality', Math.random() * 10 + 40, "Buena", 3)
+  const generateSensorData = (sensorType) => {
+    switch (sensorType) {
+      case 'temperature':
+        return parseFloat((Math.random() * 10 + 30).toFixed(1));
+      case 'humidity':
+        return parseFloat((Math.random() * 10 + 50).toFixed(1));
+      case 'pressure':
+        return parseFloat((Math.random() * 10 + 1000).toFixed(1)) ;
+      case 'wind_speed':
+        return parseFloat((Math.random() * 5 + 1).toFixed(1)) ;
+      case 'noise_level':
+        return parseFloat((Math.random() * 10 + 40).toFixed(1));
+      case 'air_quality':
+        return 'Buena';
+      default:
+        return null;
+    }
+  };
+  
+  addDataToDatabase('temperature', 'humidity', generateSensorData('temperature'), generateSensorData('humidity'), 1);
+  addDataToDatabase('pressure', 'wind_speed', generateSensorData('pressure'), generateSensorData('wind_speed'), 2);
+  addDataToDatabase('noise_level', 'air_quality', generateSensorData('noise_level'), generateSensorData('air_quality'), 3);
 });
 
 app.use(cors())
