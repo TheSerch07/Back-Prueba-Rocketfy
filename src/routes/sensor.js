@@ -2,7 +2,6 @@ const { Router } = require('express');
 const mongoose = require('mongoose');
 const router = Router();
 const Sensor = mongoose.connection.collection('sensor');
-const socketIo = require('socket.io');
 
 router.get('/:id', async (req, res) => {
     const id = Number(req.params.id);
