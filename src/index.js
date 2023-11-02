@@ -28,7 +28,7 @@ io.on('connection', (socket) => {
   socket.on(`select sensor`, async (id) => {
     sensorId = id
     const sensor = await Sensor.findOne({ sensor_id: Number(id) });
-    socket.emit('select sensor' ,sensor)
+    socket.emit('select sensor', sensor)
   })
 
   const addDataToDatabase = (typeDataOne, typeDataTwo, indexUpdate) => {
@@ -48,8 +48,11 @@ io.on('connection', (socket) => {
       );
   
       const sensor = await Sensor.findOne({ sensor_id: Number(sensorId) });
-  
-      console.log(sensorId);
+
+      const average = calculateAverage(sensor.data, sensorId)
+        
+      socket.emit(`average data ${sensorId}`)
+      console.log(average);
       socket.emit(`sensor data change ${sensorId}`, sensor);
     }, 10000);
   };
@@ -58,9 +61,9 @@ io.on('connection', (socket) => {
     switch (sensorType) {
       case 'temperature':
         return parseFloat((Math.random() * 10 + 30).toFixed(1));
-        case 'humidity':
+      case 'humidity':
         return parseFloat((Math.random() * 10 + 50).toFixed(1));
-        case 'pressure':
+      case 'pressure':
           return parseFloat((Math.random() * 10 + 1000).toFixed(1)) ;
       case 'wind_speed':
         return parseFloat((Math.random() * 5 + 1).toFixed(1)) ;
@@ -72,7 +75,35 @@ io.on('connection', (socket) => {
         return null;
       }
   };
+
+  const calculateAverage = (data, sensorId) => {
+    if (data.length === 0) return {};
+
+    let propertyNames
+
+    if (sensorId === 1) {
+      propertyNames = ['temperature', 'humidity'];
+    }
+
+    if (sensorId === 2) {
+      propertyNames = ['pressure', 'wind_speed'];
+    }
+
+    if (sensorId === 3) {
+      propertyNames = ['noise_level'];
+    }
   
+    const averages = {};
+  
+    for (const propertyName of propertyNames) {
+      const propertySum = data.reduce((total, item) => total + (item[propertyName] || 0), 0);
+      const average = parseFloat((propertySum / data.length).toFixed(1));
+      averages[propertyName] = average;
+    }
+  
+    return averages;
+  }
+
   addDataToDatabase('temperature', 'humidity', 1);
   addDataToDatabase('pressure', 'wind_speed', 2);
   addDataToDatabase('noise_level', 'air_quality', 3);
@@ -85,4 +116,3 @@ app.use('/', routes);
 server.listen(PORT, () => {
   console.log(`Server on port ${PORT}`);
 });
-
