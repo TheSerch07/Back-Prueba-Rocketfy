@@ -31,6 +31,12 @@ io.on('connection', (socket) => {
     socket.emit('select sensor', sensor)
   })
 
+  socket.on('average', async () => {
+    const sensor = await Sensor.findOne({ sensor_id: Number(sensorId) });
+    const average = calculateAverage(sensor.data, sensorId)
+    socket.emit('average', average)
+  })
+
   const addDataToDatabase = (typeDataOne, typeDataTwo, indexUpdate) => {
     setInterval(async () => {
       const calculateOne = generateSensorData(typeDataOne);
@@ -51,7 +57,7 @@ io.on('connection', (socket) => {
 
       const average = calculateAverage(sensor.data, sensorId)
         
-      socket.emit(`average data ${sensorId}`)
+      socket.emit(`average data ${sensorId}`, average)
       console.log(average);
       socket.emit(`sensor data change ${sensorId}`, sensor);
     }, 10000);
